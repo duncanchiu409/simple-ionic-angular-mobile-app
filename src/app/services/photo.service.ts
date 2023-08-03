@@ -8,14 +8,29 @@ import { Preferences } from '@capacitor/preferences';
   providedIn: 'root'
 })
 export class PhotoService {
+  public photos :UserPhoto[];
 
-  constructor() { }
+  constructor() {
+    this.photos = []
+  }
 
   public async addNewPhoto(){
-    const capturedPhoto = Camera.getPhoto({
+    const capturedPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100
     })
+
+    this.photos.unshift(
+      {
+        filePath: 'soon ...',
+        webviewPath: capturedPhoto.webPath!
+      }
+    )
   }
+}
+
+export interface UserPhoto{
+  filePath :string,
+  webviewPath? :string
 }
