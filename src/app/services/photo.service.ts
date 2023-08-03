@@ -9,9 +9,11 @@ import { Preferences } from '@capacitor/preferences';
 })
 export class PhotoService {
   public photos :UserPhoto[];
+  public PHOTO_STORAGE :string;
 
   constructor() {
     this.photos = []
+    this.PHOTO_STORAGE = 'photos'
   }
 
   private convertBlobToBase64(blob :Blob){
@@ -58,6 +60,25 @@ export class PhotoService {
 
     const savedImageFile = await this.savePicture(capturedPhoto);
     this.photos.unshift(savedImageFile)
+
+    Preferences.set({
+      key: this.PHOTO_STORAGE,
+      value: JSON.stringify(this.photos)
+    })
+  }
+
+  public async loadSaved(){
+    const { value } = await Preferences.get({key: this.PHOTO_STORAGE});
+    this.photos = (value ? JSON.parse(value) : []) as UserPhoto[];
+
+    for(let photo of this.photos){
+      const readFile = await Filesystem.readFile({
+        path: photo.filePath,
+        directory: Directory.Data
+      })
+
+      photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`
+    }
   }
 }
 

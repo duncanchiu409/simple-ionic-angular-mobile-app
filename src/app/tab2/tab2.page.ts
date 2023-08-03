@@ -11,6 +11,10 @@ export class Tab2Page {
 
   constructor(public photoService :PhotoService) {}
 
+  async ngOnOnit(){
+    this.photoService.loadSaved()
+  }
+
   public addNewPhoto(){
     this.photoService.addNewPhoto()
   }
